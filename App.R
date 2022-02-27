@@ -60,6 +60,7 @@ impactWomen <- aggregate(x = recordsWomen$match,
                          FUN = function(x) c(matches = sum(x), dates = length(x)))
 
 #create new dataframes
+attrSpec <- data.frame(points = speculation$Group.1, people = speculation$x)
 dating <- data.frame(attractiveness = impactNormal$Group.1, matches = impactNormal$x[,1], total = impactNormal$x[,2], 
                      ratio = (impactNormal$x[,1]/impactNormal$x[,2])*100)
 datingMen <- data.frame(attractiveness = impactMen$Group.1, matches = impactMen$x[,1], total = impactMen$x[,2], 
@@ -78,13 +79,15 @@ realDatingWomen <-data.frame(attractiveness = realNormalImpactWomen$Group.1, mat
 
 # Define server function  
 server <- function(input, output) {
- select_input = reactive({input$select_input})
+  select_input = reactive({input$select_input})
+  slider_input = reactive({input$slider_input})
   
+  #fist plot method
   output$dating_data_one <- renderPlot({
     if(select_input() == "overall"){
-      ggplot(data = dating, mapping = aes(fill=matches,x=attractiveness, y=matches),color="blue")+
-        geom_bar(position="dodge", stat="identity")+
-        labs(x="Attractiveness", y="ratio in %", title="% of matches compared to toal dates for each attractiveness level")
+     g <- ggplot(data = dating, mapping = aes(fill=matches,x=attractiveness, y=matches),color="blue")
+        g + geom_bar(position="dodge", stat="identity")+
+        labs(x="Attractiveness", y="Matches", title="% of matches compared to toal dates for each attractiveness level")
     } else{
       ggplot()+
         geom_line(data = dating, mapping = aes(x=attractiveness, y=matches), color= "blue")+
@@ -97,34 +100,74 @@ server <- function(input, output) {
         stat_smooth(method = "lm")
     }
   })
+  #secind plot method
+  output$dating_data_two <- renderPlot({
+    if(select_input() == "overall"){
+      g <- ggplot(data = dating, mapping = aes(fill=matches,x=attractiveness, y=matches),color="blue")
+      g + geom_bar(position="dodge", stat="identity")+
+        labs(x="Attractiveness", y="Matches", title="% of matches compared to toal dates for each attractiveness level")
+    } else if(select_input() == "for men"){
+      ggplot()+
+        geom_line(data = datingMen, mapping = aes(x=attractiveness, y=matches), color= "orange")+
+        geom_point(data = datingMen, mapping = aes(x=attractiveness, y=matches), color= "orange")+
+        labs(x="Attractiveness", y="matches men side", title="% of matches compared to toal dates for each attractiveness level")+
+        stat_smooth(method = "lm")
+    } else{
+      ggplot()+
+        geom_line(data = datingWomen, mapping = aes(x=attractiveness, y=matches), color= "red")+
+        geom_point(data = datingWomen, mapping = aes(x=attractiveness, y=matches), color= "red")+
+        labs(x="Attractiveness", y="matches women side", title="% of matches compared to toal dates for each attractiveness level")+
+        stat_smooth(method = "lm")
+    }
+  })
+  
+  output$speculation <- renderPlot({
+    ggplot(data=attrSpec, mapping=aes(x = attrSpec$points, y = people))+ 
+      geom_bar(position = "dodge", stat = "identity", color = rainbow(94))+
+      xlim(input$depth[1],input$depth[2])+
+      labs(x="Importance of attractiveness", y="Frequency of answers ", title="% of matches compared to toal dates for each attractiveness level")
+  })
 } 
 
 ui <- fluidPage(theme = shinytheme("cerulean"),
                 navbarPage(
-                  theme = "cerulean",  
                   "Data Vizualization app",
                   tabPanel("Assignment", 
-                           "In this app we will be looking at vizualized data of how important people 
-                           think attractiveness is when it comes to dating vs the actual impact"), 
+                           sidebarPanel(
+                             sliderInput("depth", "Depth:", min = 0, max = 100, value = c(0,100))
+                           ),
+                            mainPanel(
+                             
+                             plotOutput("speculation")
+                           ) 
+                            ), 
+                  
                   tabPanel("Navbar 2",
                            sidebarPanel(
                              selectInput(inputId = "select_input", label = "pick the type of impact you wish to see", 
-                                         choices = c("overall", " based on gender"))
+                                         choices = c("overall", " for men", "for women"))
                              
-                           ), # sidebarPanel
+                           ),
                            mainPanel(
                              
                              plotOutput("dating_data_one")
                            ) 
+                           # sidebarPanel
+                          # mainPanel(
+                             #tabsetPanel(
+                               #tabPanel("Plot", plotOutput("plot")), 
+                               #tabPanel("Summary", verbatimTextOutput("summary")), 
+                               #tabPanel("Table", tableOutput("table"))
+                           
                            
                   ),
-                  tabPanel("Different perspective",
+                  tabPanel("Download data",
                            sidebarPanel(
                              selectInput("input", label = "pick the type of impact you wish to see", 
                                          choices = c("overall", " based on gender")),
                              sliderInput('size', 'Point size', min = 0.2, max = 5, value = 1),
                              
-                             actionButton("show", "show graph")
+                             actionButton("download", "Download")
                              
                            ), # sidebarPanel
                            
@@ -141,28 +184,6 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
 
 
 shinyApp(ui = ui, server = server)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
