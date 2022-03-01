@@ -133,11 +133,12 @@ server <- function(input, output) {
 ui <- fluidPage(theme = shinytheme("cerulean"),
                 navbarPage(
                   "Data Vizualization app",
-                  tabPanel("Assignment",  fluidRow(tags$div(class="header", checked=NA,
+                  tabPanel("Assignment",
+                           fluidRow(tags$div(class="header", checked=NA,
                                                    tags$p("To view information about the adult dating dataset"),
-                                                   tags$a(href="https://archive-beta.ics.uci.edu/ml/datasets/adult", "Click Here!")
-                  ),
-                  br()),fluidRow(tags$div(class="header", checked=NA,
+                                                   tags$a(href="https://archive-beta.ics.uci.edu/ml/datasets/adult", "Click Here!")),
+                  br()),
+                  fluidRow(tags$div(class="header", checked=NA,
                                        tags$p("The purpose of this dashboard is to show how important attractiveness is when it comes 
                                               to dating."),
                                        tags$p("Vs the actual impact of attractiveness."),
@@ -160,8 +161,7 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
                            mainPanel(
                              tabsetPanel(
                              tabPanel("Bar plot", plotOutput("dating_data_one")), 
-                             tabPanel("Line plot", plotOutput("dating_data_two")), 
-                             tabPanel("Table", tableOutput("table"))
+                             tabPanel("Scatter plot", plotOutput("dating_data_two"))
                            )) 
                   ),
                   tabPanel("Download data",
