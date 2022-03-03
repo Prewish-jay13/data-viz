@@ -76,21 +76,28 @@ realDatingMen <-data.frame(attractiveness = realNormalImpactMen$Group.1, matches
 realDatingWomen <-data.frame(attractiveness = realNormalImpactWomen$Group.1, matches = realNormalImpactWomen$x[,1], total = realNormalImpactWomen$x[,2], 
                              ratio = (realNormalImpactWomen$x[,1]/realNormalImpactWomen$x[,2])*100)
 
+#ggplot(realDating, aes(x = "", y = matches, fill = attractiveness)) +
+  #geom_col(color = "white") +
+  #geom_text(aes(label = value),
+            #position = position_stack(vjust = 0.5)) +
+  #coord_polar(theta = "y") + scale_fill_manual(values = c("yellow", "purple",
+                                                          #"green", "orange", "red", 
+                                                         # "pink", "grey", "black"))
 
 # Define server function  
 server <- function(input, output) {
   select_input = reactive({input$select_input})
   slider_input = reactive({input$slider_input})
-  
+  select_input_mutual = reactive({input$select_input_mutual})
   #fist plot method
   output$dating_data_one <- renderPlot({
     if(select_input() == "overall"){
-     g <- ggplot(data = dating, mapping = aes(x=attractiveness, y=matches))
-        g + geom_bar(position="dodge", stat="identity")+
+      g <- ggplot(data = dating, mapping = aes(x=attractiveness, y=matches))
+      g + geom_bar(position="dodge", stat="identity")+
         labs(x="Attractiveness", y="Matches", title="amount of matches for each attractiveness level overall")
     } else  if(select_input() == "for men"){
       g <- ggplot(data = datingMen, mapping = aes(x=attractiveness, y=matches))
-       g + geom_bar(position="dodge", stat="identity")+
+      g + geom_bar(position="dodge", stat="identity")+
         labs(x="Attractiveness", y="matches", title="amount of matches for each attractiveness level for men")
     }else {
       g <- ggplot(data = datingWomen, mapping = aes(x=attractiveness, y=matches))
@@ -99,7 +106,7 @@ server <- function(input, output) {
     }
   })
   #end first plot method
-
+  
   #first page plot
   output$speculation <- renderPlot({
     ggplot(data=attrSpec, mapping=aes(x = attrSpec$points, y = people))+ 
@@ -114,20 +121,53 @@ server <- function(input, output) {
     if(select_input() == "overall"){
       ggplot()+
         geom_point(data = dating, mapping = aes(x=attractiveness, y=matches),color="black")+
-        labs(x="Attractiveness", y="Matches", title="amount of matches for each attractiveness level overall")
+        labs(x="Attractiveness", y="Number of matches", title="amount of matches for each attractiveness level overall")
     } else  if(select_input() == "for men"){
       ggplot()+
         geom_point(data = datingMen, mapping = aes(x=attractiveness, y=matches), color= "purple")+
-        labs(x="Attractiveness", y="ratio in %", title="amount of matches for each attractiveness level for men")+
+        labs(x="Attractiveness", y="Number of matches", title="amount of matches for each attractiveness level for men")+
         stat_smooth(method = "lm")
     }else {
       ggplot()+
         geom_point(data = datingWomen, mapping = aes(x=attractiveness, y=matches), color= "red")+
-        labs(x="Attractiveness", y="ratio in %", title="amount of matches for each attractiveness level for women")+
+        labs(x="Attractiveness", y="Number of matches", title="amount of matches for each attractiveness level for women")+
         stat_smooth(method = "lm")
     }
   })
   #end second tab
+  output$dating_data_mutual_one <- renderPlot({
+    if(select_input_mutual() == "overall"){
+      g <- ggplot(data = dating, mapping = aes(x=attractiveness, y=matches))
+      g + geom_bar(position="dodge", stat="identity")+
+        labs(x="Attractiveness", y="Number of matches", title="amount of matches for each attractiveness level overall")
+    } else  if(select_input_mutual() == "for men"){
+      g <- ggplot(data = datingMen, mapping = aes(x=attractiveness, y=matches))
+      g + geom_bar(position="dodge", stat="identity")+
+        labs(x="Attractiveness", y="Number of matches", title="amount of matches for each attractiveness level for men")
+    }else {
+      g <- ggplot(data = datingWomen, mapping = aes(x=attractiveness, y=matches))
+      g + geom_bar(position="dodge", stat="identity")+
+        labs(x="Attractiveness", y="Number of matches", title="amount of matches for each attractiveness level for women")
+    }
+  })
+  
+  output$dating_data_mutual_two <- renderPlot({
+    if(select_input_mutual() == "overall"){
+      ggplot()+
+        geom_point(data = realDating, mapping = aes(x=attractiveness, y=matches),color="black")+
+        labs(x="Attractiveness", y="Number of matches", title="amount of matches for each attractiveness level overall")
+    } else  if(select_input_mutual() == "for men"){
+      ggplot()+
+        geom_point(data = realDatingMen, mapping = aes(x=attractiveness, y=matches), color= "purple")+
+        labs(x="Attractiveness", y="Number of matches", title="amount of matches for each attractiveness level for men")+
+        stat_smooth(method = "lm")
+    }else {
+      ggplot()+
+        geom_point(data = realDatingWomen, mapping = aes(x=attractiveness, y=matches), color= "red")+
+        labs(x="Attractiveness", y="Number of matches", title="amount of matches for each attractiveness level for women")+
+        stat_smooth(method = "lm")
+    }
+  })
 } 
 
 ui <- fluidPage(theme = shinytheme("cerulean"),
@@ -135,24 +175,24 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
                   "Data Vizualization app",
                   tabPanel("Assignment",
                            fluidRow(tags$div(class="header", checked=NA,
-                                                   tags$p("To view information about the adult dating dataset"),
-                                                   tags$a(href="https://archive-beta.ics.uci.edu/ml/datasets/adult", "Click Here!")),
-                  br()),
-                  fluidRow(tags$div(class="header", checked=NA,
-                                       tags$p("The purpose of this dashboard is to show how important attractiveness is when it comes 
+                                             tags$p("To view information about the adult dating dataset"),
+                                             tags$a(href="https://archive-beta.ics.uci.edu/ml/datasets/adult", "Click Here!")),
+                                    br()),
+                           fluidRow(tags$div(class="header", checked=NA,
+                                             tags$p("The purpose of this dashboard is to show how important attractiveness is when it comes 
                                               to dating."),
-                                       tags$p("Vs the actual impact of attractiveness."),
-                                       tags$p("")
-                  )),fluidRow(sidebarPanel(
+                                             tags$p("Vs the actual impact of attractiveness."),
+                                             tags$p("")
+                           )),fluidRow(sidebarPanel(
                              sliderInput("depth", "Depth:", min = 0, max = 100, value = c(0,100))
                            ),
-                            mainPanel(
+                           mainPanel(
                              
                              plotOutput("speculation")
                            ) 
-                            )), 
+                           )), 
                   
-                  tabPanel("One-sides Impact of attractiveness",
+                  tabPanel("One-sided matches based on attraction",
                            #begin sidebar
                            sidebarPanel(
                              selectInput(inputId = "select_input", label = "impact of attractivenes when it comes to dating:", 
@@ -160,22 +200,22 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
                            ),
                            mainPanel(
                              tabsetPanel(
-                             tabPanel("Bar plot", plotOutput("dating_data_one")), 
-                             tabPanel("Scatter plot", plotOutput("dating_data_two"))
-                           )) 
+                               tabPanel("Bar plot", plotOutput("dating_data_one")), 
+                               tabPanel("Scatter plot", plotOutput("dating_data_two"))
+                             )) 
                   ),
-                  tabPanel("Download data",
+                  tabPanel("Mutual matches",
                            sidebarPanel(
-                             selectInput("input", label = "pick the type of impact you wish to see", 
-                                         choices = c("overall", " based on gender")),
-                             sliderInput('size', 'Point size', min = 0.2, max = 5, value = 1),
+                             selectInput(inputId = "select_input_mutual", label = "impact of attractivenes when it comes to dating:", 
+                                         choices = c("overall", "for men", "for women"))
                              
-                             actionButton("download", "Download")
-                             
-                           ), # sidebarPanel
+                           ),
                            
                            mainPanel(
-                             
+                             tabsetPanel(
+                               tabPanel("Bar plot", plotOutput("dating_data_mutual_one")), 
+                               tabPanel("Scatter plot", plotOutput("dating_data_mutual_two"))
+                             )
                            ) 
                   )
                 ) 
