@@ -178,8 +178,14 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
                            fluidRow(tags$div(class="header", checked=NA,
                                              tags$p("The purpose of this dashboard is to show how important attractiveness is when it comes 
                                               to dating. Vs the actual impact of attractiveness."),
-                                             tags$p(""),
-                                             tags$p("")
+                                             tags$p("For the dataset people were given forms and they were supposed to distribute 100 points over multiple attributes they found important in a person
+                                                    when it comes to dating. One of those attributes was attractiveness. That is why I have taken the amount of points each person filled in at the attractiveness attribute.
+                                                    "),br(),
+                                             tags$p("On this page is the barplot of the amount of people that have given a rating to how important they found attractiveness when it comes 
+                                                    to dating from a scale from 0 to a 100. You can use the slider to zoom in on the barplot to better inspect the values in the barplot."),
+                                             tags$p("The distribution of how important people find attractiveness is pretty high on the lower side of the scale of how important people
+                                                    find attractiveness but as the importance increases it is noticeable that less people find attractiveness majorly important. Because of the number of bars I decides to use the rainbow color scheme because 
+                                                    not all bars were visible when only one color was used.")
                            )),fluidRow(sidebarPanel(
                              sliderInput("depth", "Depth:", min = 0, max = 100, value = c(0,100))
                            ),
@@ -189,9 +195,18 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
                            ) 
                            )), 
                   
-                  tabPanel("Matches based on attraction",
+                  tabPanel("Matches based on attraction", 
+                           fluidRow(tags$div(class="header", checken=NA,
+                  tags$p("During the speed dating event each participant gave their date a rating between 1 and 10 based on how attractive they found their date. I also wanted to use 
+                         the income attribute as well as the other perspective but there were a lot of missing values so I could not use that attribute."))),
+                  tags$p("On this page I plotted two kinds of data.
+                           The first being the total matches each partner of a certain attractiveness level got. And 
+                           the amount of mutual matches people of a certain attractiveness level got. After plotting the data in a barplot and scatterplot you can see that the amount of matches overall increase up till an attractiveness value of 8 but lowers after that.
+                        The same can be noticed for men and women. The same can be seen looking at the matches that were mutual. Based on this it can be concluded that attractiveness does
+                        have an impact on dating but after an attractiveness value of 8 it lowers which can mean that there are also other attributes that are also important, otherwise the amount of matches
+                        would keep on increasgin as the attractiveness level got higher but this is not the case"),br(),
                            #begin sidebar
-                           sidebarPanel(
+                          fluidRow(sidebarPanel(
                              selectInput(inputId = "select_input", label = "impact of attractivenes when it comes to dating:", 
                                          choices = c("overall", "for men", "for women")), 
                              radioButtons(inputId = "based", label = "Based on", 
@@ -201,9 +216,9 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
                              tabsetPanel(
                                tabPanel("Bar plot", plotOutput("dating_data_one")), 
                                tabPanel("Scatter plot", plotOutput("dating_data_two"))
-                             )) 
+                             ))) 
                   ),
-                  tabPanel("Mutual matches",
+                  tabPanel("Tables",
                            sidebarPanel(
                              selectInput(inputId = "select_input_mutual", label = "impact of attractivenes when it comes to dating:", 
                                          choices = c("overall", "for men", "for women"))
