@@ -164,6 +164,24 @@ server <- function(input, output) {
     }
   })
   #end second tab
+  output$dating_data_three <- renderTable({
+    if(select_input() == "overall"  && input$based == "one-sided-matches"){
+  dating 
+    } 
+    else if(select_input() == "overall"  && input$based == "mutual-matches"){
+    realDating
+    }else  if(select_input() == "for men"  && input$based == "one-sided-matches"){
+    datingMen
+    }else if(select_input() == "for men"  && input$based == "mutual-matches"){
+realDatingMen
+    }
+    else if(select_input() == "for women" && input$based == "one-sided-matches"){
+     datingWomen
+    }
+    else if(select_input() == "for women" && input$based == "mutual-matches"){
+  realDatingWomen
+    }
+  })
 
 } 
 
@@ -215,22 +233,9 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
                            mainPanel(
                              tabsetPanel(
                                tabPanel("Bar plot", plotOutput("dating_data_one")), 
-                               tabPanel("Scatter plot", plotOutput("dating_data_two"))
+                               tabPanel("Scatter plot", plotOutput("dating_data_two")),
+                               tabPanel("Tabel", tableOutput("dating_data_three"))
                              ))) 
-                  ),
-                  tabPanel("Tables",
-                           sidebarPanel(
-                             selectInput(inputId = "select_input_mutual", label = "impact of attractivenes when it comes to dating:", 
-                                         choices = c("overall", "for men", "for women"))
-                             
-                           ),
-                           
-                           mainPanel(
-                             tabsetPanel(
-                               tabPanel("Bar plot", plotOutput("dating_data_mutual_one")), 
-                               tabPanel("Scatter plot", plotOutput("dating_data_mutual_two"))
-                             )
-                           ) 
                   )
                   
                   
