@@ -124,7 +124,7 @@ server <- function(input, output) {
     ggplot(data=attrSpec, mapping=aes(x = attrSpec$points, y = people))+ 
       geom_bar(position = "dodge", stat = "identity", color = rainbow(94))+
       xlim(input$depth[1],input$depth[2])+
-      labs(x="Importance of attractiveness", y="Frequency of answers ", title="% of matches compared to toal dates for each attractiveness level")
+      labs(x="Importance of attractiveness", y="Frequency of answers ", title=" amount of matches compared to toal dates for each attractiveness level")
   }) 
   #end first page plot
   
